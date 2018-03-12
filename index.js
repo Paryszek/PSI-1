@@ -6,33 +6,61 @@ class City {
     }
 }
 class Route {
-    constructor(distance, city) {
-        this.distance = distance;
-        this.visitedCities.push(city);
+    constructor() {
+        this.distance = 0;
+        this.visitedCities = []
     }
-    clone() {
-        return new Route(this.distance).city = this.visitedCities;
+    addDistance(value) {
+        this.distance += value;
+    }
+    getDistance() {
+        return this.distance;
     }
 }
-
-let dist = (cityA, cityB) => Math.sqrt(Math.pow(cityA.x - cityB.x) + Math.pow(cityA.y - cityB.y));
-
 let cities = [];
-let countOfCities = 10;
+let countOfCities = 5;
 
-for(let i = 0; i < countOfCities; i++) {
-    cities.push(new City(i, Math.floor(Math.random() * 11), Math.floor(Math.random() * 11)));
+let dist = (cityA, cityB) => Math.floor(Math.sqrt(Math.pow(cityA.x - cityB.x, 2) + Math.pow(cityA.y - cityB.y, 2)));
+
+let shuffle = (array) => {
+    array.sort();
 }
-let theBestSolution = null;
-_.forEach(cities, (city, index, array) => {
-    let solution = new Route(0, city);
-    _.forEach(array, (c) => {
-        solution.distance += dist(city, c);
-        solution.visitedCities.push(c);
-    });
-    theBestSolution = !!theBestSolution && theBestSolution.distance < solution.distance  ? solution.clone() : theBestSolution;
-    console.log(theBestSolution);
-});
 
-// let theBestSolution = cities.slice();
-console.log(theBestSolution);
+let func = (arrayOfCities) => {
+    let solution = new Route();
+    solution.visitedCities.push(arrayOfCities[0]);
+    for(let i = 1; i < arrayOfCities.length; i++) {
+        solution.addDistance(dist(arrayOfCities[i - 1], arrayOfCities[i]));
+    }
+    solution.visitedCities.push(arrayOfCities[0]);
+    solution.addDistance.push(dist(arrayOfCities[0], arrayOfCities[arrayOfCities.length]));
+    theBestSolution = theBestSolution.getDistance() === 0 ? solution : theBestSolution;
+    if(theBestSolution.distance > solution.distance) {
+        theBestSolution = solution;
+    }
+    func(shuffle(arrayOfCities.slice()));
+}
+
+for (let i = 0; i < countOfCities; i++) {
+    cities.push(new City(i, Math.floor(Math.random() * 101), Math.floor(Math.random() * 101)));
+}
+let theBestSolution = new Route();
+
+func(cities.slice());
+// for(let i = 0; i < cities.length; i++) {
+//     let solution = new Route();
+//     solution.visitedCities.push(cities[0]);
+//     for(let j = i + 1; j < cities.length; j++) {
+//         solution.addDistance(dist(cities[j - 1], cities[j]));
+//         solution.visitedCities.push(cities[j]);
+//     }
+//     console.log(solution.visitedCities);
+//     theBestSolution = theBestSolution.getDistance() === 0 ? solution : theBestSolution;
+//     if(theBestSolution.distance > solution.distance) {
+//         theBestSolution = solution;
+//     }
+// }
+
+
+
+console.log('Najkrotszy dystans: ' + theBestSolution.getDistance());
