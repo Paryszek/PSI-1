@@ -5,9 +5,10 @@ class City {
     }
 }
 
-let cities = new Array(10);
-for(let i = 1; i < cities.length; i++) {
+let cities = new Array();
+let countOfCities = 10;
+for(let i = 0; i < countOfCities; i++) {
     cities.push(new City(i, Math.random() * 10 + 1));
 }
-let theBestSolution = cities;
+let theBestSolution = cities.slice();
 console.log(theBestSolution);
