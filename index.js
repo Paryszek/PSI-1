@@ -6,60 +6,58 @@ class City {
     }
 }
 class Route {
-    constructor() {
+    constructor () {
         this.distance = 0;
         this.visitedCities = []
     }
-    addDistance(value) {
+    addDistance (value) {
         this.distance += value;
     }
-    getDistance() {
+    getDistance () {
         return this.distance;
     }
 }
 let cities = [];
-let countOfCities = 5;
+let countOfCities = 10;
 
 let dist = (cityA, cityB) => Math.floor(Math.sqrt(Math.pow(cityA.x - cityB.x, 2) + Math.pow(cityA.y - cityB.y, 2)));
 
-let shuffle = (array) => {
-    array.sort();
+let swap = (array, i, j) => {
+    console.log(array);
+    let temp = array[i];
+    array[i] = array[j];
+    array[j] = temp;
+    console.log(array);
+    return array;
 }
-
+let howmuch = 0;
 let func = (arrayOfCities) => {
+    if (howmuch === 5000) {
+        return;
+    }
+    howmuch++;
     let solution = new Route();
     solution.visitedCities.push(arrayOfCities[0]);
-    for(let i = 1; i < arrayOfCities.length; i++) {
+    for (let i = 1; i < arrayOfCities.length; i++) {
         solution.addDistance(dist(arrayOfCities[i - 1], arrayOfCities[i]));
     }
     solution.visitedCities.push(arrayOfCities[0]);
-    solution.addDistance.push(dist(arrayOfCities[0], arrayOfCities[arrayOfCities.length]));
+    solution.addDistance(dist(arrayOfCities[0], arrayOfCities[arrayOfCities.length - 1]));
     theBestSolution = theBestSolution.getDistance() === 0 ? solution : theBestSolution;
-    if(theBestSolution.distance > solution.distance) {
+    if (theBestSolution.distance > solution.distance) {
         theBestSolution = solution;
+        console.log(theBestSolution.getDistance());
     }
-    func(shuffle(arrayOfCities.slice()));
+    func(swap(arrayOfCities.slice, Math.floor(Math.random() * 10) % 4 + 1, Math.floor(Math.random() * 10) % 4 + 1));
 }
 
 for (let i = 0; i < countOfCities; i++) {
     cities.push(new City(i, Math.floor(Math.random() * 101), Math.floor(Math.random() * 101)));
 }
+
 let theBestSolution = new Route();
 
 func(cities.slice());
-// for(let i = 0; i < cities.length; i++) {
-//     let solution = new Route();
-//     solution.visitedCities.push(cities[0]);
-//     for(let j = i + 1; j < cities.length; j++) {
-//         solution.addDistance(dist(cities[j - 1], cities[j]));
-//         solution.visitedCities.push(cities[j]);
-//     }
-//     console.log(solution.visitedCities);
-//     theBestSolution = theBestSolution.getDistance() === 0 ? solution : theBestSolution;
-//     if(theBestSolution.distance > solution.distance) {
-//         theBestSolution = solution;
-//     }
-// }
 
 
 
