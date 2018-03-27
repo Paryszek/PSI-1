@@ -16,48 +16,52 @@ class Route {
     getDistance () {
         return this.distance;
     }
+	traveledDistance () {
+		// console.log(this.visitedCities);
+		for (let i = 0; i + 1 < this.visitedCities.length; i++) {
+			this.addDistance(dist(this.visitedCities[i], this.visitedCities[i + 1]));
+		}
+	}
 }
 let cities = [];
 let countOfCities = 10;
+let theBestSolution = new Route();
+let route = new Route();
 
 let dist = (cityA, cityB) => Math.floor(Math.sqrt(Math.pow(cityA.x - cityB.x, 2) + Math.pow(cityA.y - cityB.y, 2)));
 
-let swap = (array, i, j) => {
-    console.log(array);
-    let temp = array[i];
-    array[i] = array[j];
-    array[j] = temp;
-    console.log(array);
-    return array;
+let isBestRoute = (routeOne, routeTwo) => {
+	routeOne.traveledDistance();
+	routeTwo.traveledDistance();
+	if (routeOne.distance < routeTwo.distance) {
+		console.log(routeOne.distance);
+	}
+	return routeOne.distance < routeTwo.distance;
 }
-let howmuch = 0;
-let func = (arrayOfCities) => {
-    if (howmuch === 5000) {
-        return;
-    }
-    howmuch++;
-    let solution = new Route();
-    solution.visitedCities.push(arrayOfCities[0]);
-    for (let i = 1; i < arrayOfCities.length; i++) {
-        solution.addDistance(dist(arrayOfCities[i - 1], arrayOfCities[i]));
-    }
-    solution.visitedCities.push(arrayOfCities[0]);
-    solution.addDistance(dist(arrayOfCities[0], arrayOfCities[arrayOfCities.length - 1]));
-    theBestSolution = theBestSolution.getDistance() === 0 ? solution : theBestSolution;
-    if (theBestSolution.distance > solution.distance) {
-        theBestSolution = solution;
-        console.log(theBestSolution.getDistance());
-    }
-    func(swap(arrayOfCities.slice, Math.floor(Math.random() * 10) % 4 + 1, Math.floor(Math.random() * 10) % 4 + 1));
+let func = (route, arrayOfCities) => {
+	if(arrayOfCities.length !== 0) {
+		for (let i = 0; i < arrayOfCities.length; i++) {
+			let justRemoved = new City();
+			justRemoved = arrayOfCities.shift();
+			let newRoute = new Route();
+			newRoute.distance = route.distance;
+			newRoute.visitedCities = route.visitedCities;
+			newRoute.visitedCities.push(justRemoved);
+			func(newRoute, arrayOfCities);
+			arrayOfCities.push(justRemoved);
+		}
+	} else {
+		if(isBestRoute(route, theBestSolution)) {
+			theBestSolution = route;
+		}
+	}
 }
 
 for (let i = 0; i < countOfCities; i++) {
     cities.push(new City(i, Math.floor(Math.random() * 101), Math.floor(Math.random() * 101)));
 }
 
-let theBestSolution = new Route();
-
-func(cities.slice());
+func(route, cities.slice());
 
 
 
