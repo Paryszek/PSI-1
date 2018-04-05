@@ -35,7 +35,7 @@ class Route {
 	}
 }
 let cities = [];
-let countOfCities = 15;
+let countOfCities = 5;
 let theBestSolution = new Route();
 let route = new Route();
 
@@ -44,33 +44,41 @@ let dist = (cityA, cityB) => {
 };
 
 let isBestRoute = (routeOne, routeTwo) => {
-	routeOne.traveledDistance();
-	routeTwo.traveledDistance();
-	console.log(routeOne.getDistance() + " < " + theBestSolution.getDistance());
-	return routeOne.distance < routeTwo.distance;
+	if (routeTwo.visitedCities.length !== 0) {
+		routeOne.traveledDistance();
+		routeTwo.traveledDistance();
+		if (routeOne.distance < routeTwo.distance) {
+			console.log(routeOne.distance < routeTwo.distance);
+		}
+		return routeOne.distance < routeTwo.distance;
+	}
 }
 let func = (route, arrayOfCities) => {
 	if(arrayOfCities.length !== 0) {
 		for (let i = 0; i < arrayOfCities.length; i++) {
 			let justRemoved = arrayOfCities[0].clone();
-			arrayOfCities = arrayOfCities.slice(1, arrayOfCities.length - 1);
+			arrayOfCities = arrayOfCities.slice(1, arrayOfCities.length);
 			let newRoute = route.clone();
 			newRoute.visitedCities.unshift(justRemoved);
 			func(newRoute, arrayOfCities);
 			arrayOfCities.unshift(justRemoved);
 		}
 	} else {
-		if (isBestRoute(route, theBestSolution)) {
-			theBestSolution = route.clone();
-		} else if (theBestSolution.getDistance() === 0) {
+		if (isBestRoute(route, theBestSolution.clone())) {
+			console.log(route.distance < theBestSolution.distance);
+			if (route.distance < theBestSolution.distance) {
+				console.log(route.distance < theBestSolution.distance);
+			}
 			theBestSolution = route.clone();
 		}
 	}
 }
 
 for (let i = 0; i < countOfCities; i++) {
-    cities.push(new City(i, Math.floor(Math.random() * 101), Math.floor(Math.random() * 101)));
+	cities.push(new City(i, Math.floor(Math.random() * 101), Math.floor(Math.random() * 101)));
+	theBestSolution.visitedCities.push(cities[i]);
 }
+
 
 func(route, cities.slice());
 
