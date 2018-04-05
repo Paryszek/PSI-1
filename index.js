@@ -17,42 +17,48 @@ class Route {
         return this.distance;
     }
 	traveledDistance () {
-		// console.log(this.visitedCities);
 		for (let i = 0; i + 1 < this.visitedCities.length; i++) {
 			this.addDistance(dist(this.visitedCities[i], this.visitedCities[i + 1]));
 		}
+		// console.log(this.distance);
+	}
+	clone () {
+		let cloneRoute = new Route();
+		cloneRoute.distance = this.distance;
+		cloneRoute.visitedCities = this.visitedCities;
+		return cloneRoute;
 	}
 }
 let cities = [];
-let countOfCities = 10;
+let countOfCities = 5;
 let theBestSolution = new Route();
 let route = new Route();
 
-let dist = (cityA, cityB) => Math.floor(Math.sqrt(Math.pow(cityA.x - cityB.x, 2) + Math.pow(cityA.y - cityB.y, 2)));
+let dist = (cityA, cityB) => { 
+	// console.log(cityA.x);
+	return Math.floor(Math.sqrt(Math.pow(cityA.x - cityB.x, 2) + Math.pow(cityA.y - cityB.y, 2)));
+};
 
 let isBestRoute = (routeOne, routeTwo) => {
 	routeOne.traveledDistance();
 	routeTwo.traveledDistance();
-	if (routeOne.distance < routeTwo.distance) {
-		console.log(routeOne.distance);
-	}
 	return routeOne.distance < routeTwo.distance;
 }
 let func = (route, arrayOfCities) => {
 	if(arrayOfCities.length !== 0) {
 		for (let i = 0; i < arrayOfCities.length; i++) {
-			let justRemoved = new City();
-			justRemoved = arrayOfCities.shift();
-			let newRoute = new Route();
-			newRoute.distance = route.distance;
-			newRoute.visitedCities = route.visitedCities;
-			newRoute.visitedCities.push(justRemoved);
+			console.log(arrayOfCities[i]);
+			let justRemoved = arrayOfCities.splice(0, 1);
+			let newRoute = route.clone();
+			newRoute.visitedCities.unshift(justRemoved);
 			func(newRoute, arrayOfCities);
-			arrayOfCities.push(justRemoved);
+			arrayOfCities.unshift(justRemoved);
 		}
 	} else {
-		if(isBestRoute(route, theBestSolution)) {
-			theBestSolution = route;
+		if (isBestRoute(route, theBestSolution)) {
+			theBestSolution = route.clone();
+		} else if (theBestSolution.getDistance() === 0) {
+			theBestSolution = route.clone();
 		}
 	}
 }
@@ -65,4 +71,4 @@ func(route, cities.slice());
 
 
 
-console.log('Najkrotszy dystans: ' + theBestSolution.getDistance());
+console.log('Najkrotszy dystans: ' + theBestSolution.getDistance().toString());
