@@ -3,24 +3,29 @@ class City {
         this.id = id;
         this.x = x;
         this.y = y;
-    }
+	}
+	
+	clone () {
+		return new City(this.id, this.x, this.y);
+	}
 }
 class Route {
     constructor () {
         this.distance = 0;
         this.visitedCities = []
     }
-    addDistance (value) {
-        this.distance += value;
+    setDistance (value) {
+        this.distance = value;
     }
     getDistance () {
         return this.distance;
     }
 	traveledDistance () {
+		let distT = 0;
 		for (let i = 0; i + 1 < this.visitedCities.length; i++) {
-			this.addDistance(dist(this.visitedCities[i], this.visitedCities[i + 1]));
+			distT += dist(this.visitedCities[i], this.visitedCities[i + 1]);
 		}
-		// console.log(this.distance);
+		this.setDistance(distT);
 	}
 	clone () {
 		let cloneRoute = new Route();
@@ -30,25 +35,25 @@ class Route {
 	}
 }
 let cities = [];
-let countOfCities = 5;
+let countOfCities = 15;
 let theBestSolution = new Route();
 let route = new Route();
 
 let dist = (cityA, cityB) => { 
-	// console.log(cityA.x);
 	return Math.floor(Math.sqrt(Math.pow(cityA.x - cityB.x, 2) + Math.pow(cityA.y - cityB.y, 2)));
 };
 
 let isBestRoute = (routeOne, routeTwo) => {
 	routeOne.traveledDistance();
 	routeTwo.traveledDistance();
+	console.log(routeOne.getDistance() + " < " + theBestSolution.getDistance());
 	return routeOne.distance < routeTwo.distance;
 }
 let func = (route, arrayOfCities) => {
 	if(arrayOfCities.length !== 0) {
 		for (let i = 0; i < arrayOfCities.length; i++) {
-			console.log(arrayOfCities[i]);
-			let justRemoved = arrayOfCities.splice(0, 1);
+			let justRemoved = arrayOfCities[0].clone();
+			arrayOfCities = arrayOfCities.slice(1, arrayOfCities.length - 1);
 			let newRoute = route.clone();
 			newRoute.visitedCities.unshift(justRemoved);
 			func(newRoute, arrayOfCities);
@@ -71,4 +76,4 @@ func(route, cities.slice());
 
 
 
-console.log('Najkrotszy dystans: ' + theBestSolution.getDistance().toString());
+console.log('Najkrotszy dystans: ' + theBestSolution.getDistance());
