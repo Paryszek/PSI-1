@@ -1,3 +1,5 @@
+var _ = require('lodash');
+
 class City {
     constructor(id, x, y) {
         this.id = id;
@@ -59,13 +61,13 @@ let isBestRoute = (routeOne, routeTwo) => {
 		return routeOne.distance < routeTwo.distance;
 	}
 }
-let TSP = (index, route, arrayOfCities) => {
+let BruteForce = (index, route, arrayOfCities) => {
 	if(index !== countOfCities - 1) {
 		for (let i = 0; i < arrayOfCities.length; i++) {
 			arrayOfCities = swap(arrayOfCities, index, i);
 			route.visitedCities = arrayOfCities.slice();
 			let newRoute = route.clone();
-			TSP(index + 1, newRoute, arrayOfCities);
+			BruteForce(index + 1, newRoute, arrayOfCities);
 			arrayOfCities = swap(arrayOfCities, index, i);
 		}
 	} else {
@@ -75,11 +77,39 @@ let TSP = (index, route, arrayOfCities) => {
 	}
 }
 
+let ClosestNeighbor = (index, arrayOfCities, currentCity) => {
+	if (!currentCity) {
+		currentCity = arrayOfCities[0];
+	}
+	if (arrayOfCities.length === countOfCities) {
+		theBestSolution.visitedCities.push(arrayOfCities.splice(0, 1)[0]);
+	}
+	if (arrayOfCities.length === 0) {
+		return;
+	}
+	let dist = countDist(currentCity, arrayOfCities[0]);
+	let iterator  = 0;
+	_.forEach(arrayOfCities, (city, i) => {
+		if (dist > countDist(currentCity, city)) {
+			dist = countDist(currentCity, city);
+			iterator = i;
+		}
+		if (i === arrayOfCities.length - 1) {
+			theBestSolution.visitedCities.push(arrayOfCities.splice(iterator, 1)[0])
+			ClosestNeighbor(0, arrayOfCities, theBestSolution.visitedCities[theBestSolution.visitedCities.length - 1]);
+		}
+	})
+}
+
 // Init the cities
 for (let i = 0; i < countOfCities; i++) {
 	cities.push(new City(i, Math.floor(Math.random() * 101), Math.floor(Math.random() * 101)));
 	theBestSolution.visitedCities.push(cities[i]);
 }
 
-TSP(0, route, cities.slice());
-console.log('Najkrotszy dystans: ' + theBestSolution.getDistance());
+BruteForce(0, route.clone(), cities.slice());
+console.log('Najkrotszy dystans BruteForce: ' + theBestSolution.getDistance());
+theBestSolution = new Route();
+ClosestNeighbor(0, cities.slice(), undefined);
+theBestSolution.traveledDistance();
+console.log('Najkrotszy dystans ClosestNeighbor: ' + theBestSolution.getDistance());
