@@ -61,6 +61,10 @@ let isBestRoute = (routeOne, routeTwo) => {
 		return routeOne.distance < routeTwo.distance;
 	}
 }
+
+let getRandomCity = (cities) => {
+	return cities[Math.floor(Math.random() * cities.length)];
+}
 let BruteForce = (index, route, arrayOfCities) => {
 	if(index !== countOfCities - 1) {
 		for (let i = 0; i < arrayOfCities.length; i++) {
@@ -78,9 +82,6 @@ let BruteForce = (index, route, arrayOfCities) => {
 }
 
 let ClosestNeighbor = (index, arrayOfCities, currentCity) => {
-	if (!currentCity) {
-		currentCity = arrayOfCities[0];
-	}
 	if (arrayOfCities.length === countOfCities) {
 		theBestSolution.visitedCities.push(arrayOfCities.splice(0, 1)[0]);
 	}
@@ -101,15 +102,27 @@ let ClosestNeighbor = (index, arrayOfCities, currentCity) => {
 	})
 }
 
+let InsertionHeuristics = (arrayOfCities) => {
+	while (arrayOfCities.length) {
+		let randomCity = getRandomCity(arrayOfCities);
+		console.log(randomCity);
+		arrayOfCities = arrayOfCities.slice(0, arrayOfCities.length - 1);
+	}
+}
+
 // Init the cities
 for (let i = 0; i < countOfCities; i++) {
 	cities.push(new City(i, Math.floor(Math.random() * 101), Math.floor(Math.random() * 101)));
 	theBestSolution.visitedCities.push(cities[i]);
 }
 
-BruteForce(0, route.clone(), cities.slice());
-console.log('Najkrotszy dystans BruteForce: ' + theBestSolution.getDistance());
+// BruteForce(0, route.clone(), cities.slice());
+// console.log('Najkrotszy dystans BruteForce: ' + theBestSolution.getDistance());
+
+// theBestSolution = new Route();
+// ClosestNeighbor(0, cities.slice(), cities[0]);
+// theBestSolution.traveledDistance();
+// console.log('Najkrotszy dystans ClosestNeighbor: ' + theBestSolution.getDistance());
+
 theBestSolution = new Route();
-ClosestNeighbor(0, cities.slice(), undefined);
-theBestSolution.traveledDistance();
-console.log('Najkrotszy dystans ClosestNeighbor: ' + theBestSolution.getDistance());
+InsertionHeuristics(cities.slice());
