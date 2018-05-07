@@ -46,15 +46,40 @@ let route = new Route();
 let countDist = (cityA, cityB) => { 
 	return Math.floor(Math.sqrt(Math.pow(cityA.x - cityB.x, 2) + Math.pow(cityA.y - cityB.y, 2)));
 };
-
-let swap = (arr, i, j) => {
-	let temp = arr[i];
-	arr[i] = arr[j];
-	arr[j] = temp;
-	return arr;
+const move = (arr, old_index, new_index) => {
+    while (old_index < 0) {
+        old_index += arr.length;
+    }
+    while (new_index < 0) {
+        new_index += arr.length;
+    }
+    if (new_index >= arr.length) {
+        var k = new_index - arr.length;
+        while ((k--) + 1) {
+            arr.push(undefined);
+        }
+    }
+     arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);  
+   return arr;
 }
+const swap = (arr, i, j) => {
+	let tArr = arr.slice(0);
+	let temp = tArr[i];
+	tArr[i] = tArr[j];
+	tArr[j] = temp;
+	return tArr;
+}
+const shuffle = (arr) => {
+    for (var i = arr.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+    }
+    return arr;
+};
 
-let isBestRoute = (routeOne, routeTwo) => {
+const isBestRoute = (routeOne, routeTwo) => {
 	if (routeTwo.visitedCities.length !== 0) {
 		routeOne.traveledDistance();
 		routeTwo.traveledDistance();
@@ -62,10 +87,13 @@ let isBestRoute = (routeOne, routeTwo) => {
 	}
 }
 
-let getRandomCity = (cities) => {
-	return cities[Math.floor(Math.random() * cities.length)];
+const getRandomCity = (cities) => {
+	let index = Math.floor(Math.random() * cities.length);
+	let cityToReturn = cities[index];
+	cities.splice(index, 1);
+	return cityToReturn;
 }
-let BruteForce = (index, route, arrayOfCities) => {
+const BruteForce = (index, route, arrayOfCities) => {
 	if(index !== countOfCities - 1) {
 		for (let i = 0; i < arrayOfCities.length; i++) {
 			arrayOfCities = swap(arrayOfCities, index, i);
@@ -81,7 +109,7 @@ let BruteForce = (index, route, arrayOfCities) => {
 	}
 }
 
-let ClosestNeighbor = (index, arrayOfCities, currentCity) => {
+const ClosestNeighbor = (index, arrayOfCities, currentCity) => {
 	if (arrayOfCities.length === countOfCities) {
 		theBestSolution.visitedCities.push(arrayOfCities.splice(0, 1)[0]);
 	}
@@ -102,11 +130,28 @@ let ClosestNeighbor = (index, arrayOfCities, currentCity) => {
 	})
 }
 
-let InsertionHeuristics = (arrayOfCities) => {
+const InsertionHeuristics = (arrayOfCities) => {
+	// init the Route
+	let firstCity = getRandomCity(arrayOfCities);
+	theBestSolution.visitedCities.push(firstCity);
+	theBestSolution.visitedCities.push(getRandomCity(arrayOfCities));
+	theBestSolution.visitedCities.push(firstCity);
+	let theBestDistance;
 	while (arrayOfCities.length) {
-		let randomCity = getRandomCity(arrayOfCities);
-		console.log(randomCity);
-		arrayOfCities = arrayOfCities.slice(0, arrayOfCities.length - 1);
+		let currentCity = getRandomCity(arrayOfCities);
+		theBestSolution.visitedCities.push(currentCity)
+		move(theBestSolution.visitedCities, theBestSolution.visitedCities.length - 1, theBestSolution.visitedCities.length - 2);
+		theBestSolution.traveledDistance();
+		theBestDistance = theBestSolution.getDistance();
+		let tempRoute = new Route();
+		tempRoute = theBestSolution.clone();
+		for (let i = tempRoute.visitedCities.length - 2; i > 1; i--) {
+			move(tempRoute.visitedCities, i, i - 1);
+			tempRoute.traveledDistance();
+			if (theBestDistance > tempRoute.getDistance()) {
+				theBestSolution = tempRoute.clone();
+			}
+		}
 	}
 }
 
@@ -116,13 +161,17 @@ for (let i = 0; i < countOfCities; i++) {
 	theBestSolution.visitedCities.push(cities[i]);
 }
 
-// BruteForce(0, route.clone(), cities.slice());
-// console.log('Najkrotszy dystans BruteForce: ' + theBestSolution.getDistance());
+BruteForce(0, route.clone(), cities.slice());
+theBestSolution.traveledDistance();
+console.log('Najkrotszy dystans BruteForce: ' + theBestSolution.getDistance());
 
-// theBestSolution = new Route();
-// ClosestNeighbor(0, cities.slice(), cities[0]);
-// theBestSolution.traveledDistance();
-// console.log('Najkrotszy dystans ClosestNeighbor: ' + theBestSolution.getDistance());
+theBestSolution = new Route();
+ClosestNeighbor(0, cities.slice(), cities[0]);
+theBestSolution.traveledDistance();
+console.log('Najkrotszy dystans ClosestNeighbor: ' + theBestSolution.getDistance());
 
 theBestSolution = new Route();
 InsertionHeuristics(cities.slice());
+theBestSolution.visitedCities.splice(theBestSolution.visitedCities - 1, 1); // bez powrotu
+theBestSolution.traveledDistance();
+console.log('Najkrotszy dystans InsertionHeuristics: ' + theBestSolution.getDistance());
