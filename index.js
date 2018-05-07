@@ -38,7 +38,7 @@ class Route {
 }
 
 let cities = [];
-let countOfCities = 4;
+let countOfCities = 8;
 let theBestSolution = new Route();
 let route = new Route();
 
@@ -69,15 +69,6 @@ const swap = (arr, i, j) => {
 	tArr[j] = temp;
 	return tArr;
 }
-const shuffle = (arr) => {
-    for (var i = arr.length - 1; i > 0; i--) {
-        var j = Math.floor(Math.random() * (i + 1));
-        var temp = arr[i];
-        arr[i] = arr[j];
-        arr[j] = temp;
-    }
-    return arr;
-};
 
 const isBestRoute = (routeOne, routeTwo) => {
 	if (routeTwo.visitedCities.length !== 0) {
@@ -161,17 +152,24 @@ for (let i = 0; i < countOfCities; i++) {
 	theBestSolution.visitedCities.push(cities[i]);
 }
 
+timeBefore = new Date().getTime();
 BruteForce(0, route.clone(), cities.slice());
 theBestSolution.traveledDistance();
 console.log('Najkrotszy dystans BruteForce: ' + theBestSolution.getDistance());
+console.log('Czas Wykonania: ' + (new Date().getTime() - timeBefore) + ' ms');
 
+
+timeBefore = new Date().getTime();
 theBestSolution = new Route();
 ClosestNeighbor(0, cities.slice(), cities[0]);
 theBestSolution.traveledDistance();
 console.log('Najkrotszy dystans ClosestNeighbor: ' + theBestSolution.getDistance());
+console.log('Czas Wykonania: ' + (new Date().getTime() - timeBefore) + ' ms');
 
+timeBefore = new Date().getTime();
 theBestSolution = new Route();
 InsertionHeuristics(cities.slice());
-theBestSolution.visitedCities.splice(theBestSolution.visitedCities - 1, 1); // bez powrotu
+theBestSolution.visitedCities.splice(theBestSolution.visitedCities - 1, 1);
 theBestSolution.traveledDistance();
 console.log('Najkrotszy dystans InsertionHeuristics: ' + theBestSolution.getDistance());
+console.log('Czas Wykonania: ' + (new Date().getTime() - timeBefore) + ' ms');
